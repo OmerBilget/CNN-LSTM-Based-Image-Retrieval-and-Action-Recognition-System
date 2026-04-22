@@ -21,8 +21,8 @@ The study investigates different deep learning architectures such as CNN, 3D CNN
 
 ---
 
-### 2. Image Retrieval
-- Approach: Content-Based Image Retrieval (CBIR) (CIFAR-10 database)
+### 2. Image Retrieval  (CIFAR-10 database)
+- Approach: Content-Based Image Retrieval (CBIR)
 - Feature Extraction: CNN-based embeddings
 - Evaluation Metrics:
   - Top-1 Accuracy
@@ -31,8 +31,8 @@ The study investigates different deep learning architectures such as CNN, 3D CNN
 
 ---
 
-# 3. Action Recognition
-- Dataset: 10-class human activity (UCF-101 subset)
+### 3. Action Recognition (UCF-101 subset)
+- Dataset: 10-class human activity 
   (Basketball, Biking, Bowling, HighJump, HorseRiding, JavelinThrow, RopeClimbing, Skiing, SkyDiving, TennisSwing)
 
 - Models Implemented:
