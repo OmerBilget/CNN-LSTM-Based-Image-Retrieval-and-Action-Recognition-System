@@ -4,7 +4,7 @@ This project is a deep learning case study exploring multiple approaches for ima
 # Overview
 This repository presents a comprehensive deep learning case study exploring multiple computer vision tasks, including:
 
-- Image Classification (MNIST)
+- Image Classification 
 - Content-Based Image Retrieval
 - Human Action Recognition
 
