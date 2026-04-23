@@ -24,6 +24,8 @@ IMG_SIZE = 112
 EPOCH=50
 LEARNİNG_RATE=1e-4
 Dataset="Dataset1"
+
+
 #check gpu
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))

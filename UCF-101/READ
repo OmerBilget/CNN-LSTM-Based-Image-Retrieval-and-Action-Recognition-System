@@ -1,0 +1,31 @@
+To create a new subset, you need to download the UCF-101 dataset from the following link and place it inside the UCF-101 folder: https://www.kaggle.com/datasets/matthewjansen/ucf101-action-recognition
+. The train, val, and test directories must be located inside this folder.
+
+Folder Structure:
+
+UCF-101/
+│
+├── train/
+│   ├── class_1/
+│   │   ├── video1.avi
+│   │   ├── video2.avi
+│   │   └── ...
+│   │
+│   ├── class_2/
+│   │   └── ...
+│   │
+│   └── ...
+│
+├── val/
+│   ├── class_1/
+│   │   └── ...
+│   ├── class_2/
+│   │   └── ...
+│   └── ...
+│
+└── test/
+    ├── class_1/
+    │   └── ...
+    ├── class_2/
+    │   └── ...
+    └── ...

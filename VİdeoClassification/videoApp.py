@@ -1,28 +1,17 @@
 import os
 import random
-import time
-
 import cv2
 import numpy as np
 import tensorflow as tf
 import keras
-from PyQt6.uic.properties import QtCore
-from certifi.__main__ import args
-from keras import layers
-from keras.src.ops import dtype
-from sklearn.metrics import confusion_matrix
-from tensorflow.keras.models import Model
 import sys
-
 from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QSlider, QSpinBox, QLabel
 from PyQt6.QtMultimedia import QMediaPlayer
 from PyQt6.QtMultimediaWidgets import QVideoWidget
 from PyQt6.QtCore import QUrl, Qt, QThread, QObject, pyqtSignal
 import glob
 from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score, classification_report
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv3D, MaxPooling3D, BatchNormalization
-from tensorflow.keras.layers import GlobalAveragePooling3D, Dense, Dropout
+
 NUM_CLASSES = 10
 NFRAMES=10 # transfer 10 cnn 10 ltsm 16 ltsmv2 16
 
