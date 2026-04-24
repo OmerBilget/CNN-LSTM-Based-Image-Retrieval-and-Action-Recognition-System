@@ -24,8 +24,6 @@ IMG_SIZE = 112
 EPOCH=50
 LEARNİNG_RATE=1e-4
 Dataset="Dataset1"
-
-
 #check gpu
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
@@ -136,34 +134,24 @@ print(train_data)
 def build_3d_cnn(input_shape=(NFRAMES,IMG_SIZE,IMG_SIZE,3), num_classes=NUM_CLASSES):
     model = keras.models.Sequential()
 
-    # 3D convolutional layer with 64 filters, kernel size of (3, 3, 3), and ReLU activation
+   
     model.add(Conv3D(64, (3, 3, 3), activation='relu', padding='same', input_shape=input_shape))
-    # 3D max pooling layer with pool size of (2, 2, 2)
     model.add(MaxPooling3D((2, 2, 2)))
-    # Batch normalization layer
     model.add(BatchNormalization())
 
-    # Another 3D convolutional layer with 128 filters, kernel size of (3, 3, 3), and ReLU activation
     model.add(Conv3D(128, (3, 3, 3), activation='relu', padding='same'))
-    # Another 3D max pooling layer with pool size of (2, 2, 2)
     model.add(MaxPooling3D((2, 2, 2)))
-    # Another batch normalization layer
     model.add(BatchNormalization())
 
-    # Another 3D convolutional layer with 256 filters, kernel size of (3, 3, 3), and ReLU activation
     model.add(Conv3D(256, (3, 3, 3), activation='relu', padding='same'))
-    # Another 3D max pooling layer with pool size of (2, 2, 2)
     model.add(MaxPooling3D((2, 2, 2)))
-    # Another batch normalization layer
     model.add(BatchNormalization())
 
-    # Flatten layer to flatten the output of the convolutional layers
     model.add(GlobalAveragePooling3D())#raises accuracy
     model.add(Dense(128, activation='relu')) #raises accuracy
     model.add(Dropout(0.3))
     model.add(Dense(num_classes, activation='softmax'))
 
-    # Compile the model with Adam optimizer, categorical crossentropy loss, and accuracy metric
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNİNG_RATE),
         loss="categorical_crossentropy",
@@ -175,27 +163,26 @@ def build_3d_cnnV2(input_shape=(NFRAMES, IMG_SIZE, IMG_SIZE, 3), num_classes=NUM
 
     x = inputs
 
-    # Block 1 (NO temporal pooling)
+    
     x = Conv3D(64, (3,3,3), padding='same', activation='relu')(x)
     x = BatchNormalization()(x)
     x = MaxPooling3D((1,2,2))(x)  # only spatial
 
-    # Block 2
+  
     x = Conv3D(128, (3,3,3), padding='same', activation='relu')(x)
     x = BatchNormalization()(x)
     x = MaxPooling3D((1,2,2))(x)
 
-    # Block 3
+    
     x = Conv3D(256, (3,3,3), padding='same', activation='relu')(x)
     x = BatchNormalization()(x)
     x = MaxPooling3D((2,2,2))(x)  # NOW reduce time
 
-    # Block 4 (new - deeper)
     x = Conv3D(256, (3,3,3), padding='same', activation='relu')(x)
     x = BatchNormalization()(x)
     x = MaxPooling3D((2,2,2))(x)
 
-    # Head
+   
     x = GlobalAveragePooling3D()(x)
 
     x = Dense(256, activation='relu')(x)
@@ -222,32 +209,32 @@ def build_3d_cnn_transfer_learning(input_shape=(NFRAMES,IMG_SIZE,IMG_SIZE,3), nu
     """
     num_frames, h, w, c = input_shape
 
-    # Pretrained MobileNetV2 backbone (feature extractor)
+    # Pretrained MobileNetV2
     base_cnn = MobileNetV2(
         weights='imagenet', include_top=False,
         input_shape=(h, w, c)
     )
     base_cnn.trainable = False  # freeze CNN
 
-    # Input layer: sequence of frames
+    # sequence of frames
     video_input = layers.Input(shape=input_shape)
 
-    # TimeDistributed: apply CNN to each frame
+    # apply CNN to each frame
     x = layers.TimeDistributed(base_cnn)(video_input)
     x = layers.TimeDistributed(layers.GlobalAveragePooling2D())(x)  # frame-level feature vector
 
-    # LSTM for temporal modeling
+    # LSTM
     x = layers.LSTM(128, return_sequences=False)(x)
     x = layers.Dropout(0.5)(x)
     x = layers.Dense(128, activation='relu')(x)
     x = layers.Dropout(0.5)(x)
 
-    # Output layer
+    # Output 
     output = layers.Dense(num_classes, activation='softmax')(x)
 
     model = models.Model(inputs=video_input, outputs=output)
 
-    # Compile model
+   
     model.compile(
         #1e-4
         optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNİNG_RATE),
@@ -260,7 +247,7 @@ def build_lstm_model(input_shape=(NFRAMES, IMG_SIZE,IMG_SIZE, 3), num_classes=NU
 
     inputs = keras.Input(shape=input_shape)
 
-    # --- Frame feature extractor ---
+   
     x = TimeDistributed(Conv2D(32, (3,3), activation='relu', padding='same'))(inputs)
     x = TimeDistributed(BatchNormalization())(x)
     x = TimeDistributed(MaxPooling2D((2,2)))(x)
@@ -277,14 +264,14 @@ def build_lstm_model(input_shape=(NFRAMES, IMG_SIZE,IMG_SIZE, 3), num_classes=NU
     x = TimeDistributed(BatchNormalization())(x)
     x = TimeDistributed(GlobalAveragePooling2D())(x)
 
-    # --- Temporal learning ---
+   
     x = LSTM(256, return_sequences=True)(x)
     x = Dropout(0.5)(x)
 
     x = LSTM(128)(x)
     x = Dropout(0.5)(x)
 
-    # --- Classifier ---
+    
     x = Dense(128, activation='relu')(x)
     x = Dropout(0.5)(x)
 
@@ -303,7 +290,7 @@ def build_lstmV2(input_shape=(16,IMG_SIZE,IMG_SIZE, 3), num_classes=NUM_CLASSES)
 
     inputs = keras.Input(shape=input_shape)
 
-    # -------- Frame feature extractor --------
+   
     x = TimeDistributed(Conv2D(32, (3,3), padding='same', activation='relu'))(inputs)
     x = TimeDistributed(BatchNormalization())(x)
     x = TimeDistributed(MaxPooling2D(2,2))(x)
@@ -320,14 +307,14 @@ def build_lstmV2(input_shape=(16,IMG_SIZE,IMG_SIZE, 3), num_classes=NUM_CLASSES)
     x = TimeDistributed(BatchNormalization())(x)
     x = TimeDistributed(GlobalAveragePooling2D())(x)
 
-    # -------- Temporal modeling --------
+    
     x = Bidirectional(LSTM(256, return_sequences=True))(x)
     x = Dropout(0.5)(x)
 
     x = Bidirectional(LSTM(128))(x)
     x = Dropout(0.5)(x)
 
-    # -------- Classifier --------
+    #Classifier
     x = Dense(256, activation='relu')(x)
     x = Dropout(0.5)(x)
 
@@ -384,34 +371,32 @@ def build_3dcnn_lstm_v2(input_shape=(16,112,112,3), num_classes=NUM_CLASSES):
 
     x = inputs
 
-    # -------- 3D CNN (feature extractor) --------
-    # Block 1 (keep time)
+    
     x = Conv3D(64, (3,3,3), padding='same', activation='relu')(x)
     x = BatchNormalization()(x)
     x = MaxPooling3D((1,2,2))(x)
 
-    # Block 2
+    
     x = Conv3D(128, (3,3,3), padding='same', activation='relu')(x)
     x = BatchNormalization()(x)
     x = MaxPooling3D((1,2,2))(x)
 
-    # Block 3 (NOW reduce time)
+    
     x = Conv3D(256, (3,3,3), padding='same', activation='relu')(x)
     x = BatchNormalization()(x)
     x = MaxPooling3D((2,2,2))(x)
 
-    # -------- Convert to sequence --------
-    # (batch, time, H, W, C) → (batch, time, features)
+    
     x = TimeDistributed(GlobalAveragePooling2D())(x)
 
-    # -------- LSTM --------
+    #LSTM
     x = LSTM(128, return_sequences=True)(x)
     x = Dropout(0.3)(x)
 
     x = LSTM(64)(x)
     x = Dropout(0.3)(x)
 
-    # -------- Classifier --------
+    #Classifier
     x = Dense(128, activation='relu')(x)
     x = Dropout(0.4)(x)
 
@@ -430,7 +415,7 @@ def build_transfer_lstm(input_shape=(20, 112, 112, 3), num_classes=12):
 
     inputs = keras.Input(shape=input_shape)
 
-    # -------- Pretrained CNN --------
+    #Pretrained CNN
     base_model = tf.keras.applications.MobileNetV2(
         weights='imagenet',
         include_top=False,
@@ -439,18 +424,18 @@ def build_transfer_lstm(input_shape=(20, 112, 112, 3), num_classes=12):
 
     base_model.trainable = False  # freeze initially
 
-    # Apply CNN to each frame
+    # Apply CNN
     x = TimeDistributed(base_model)(inputs)
     x = TimeDistributed(GlobalAveragePooling2D())(x)
 
-    # -------- Temporal --------
+   
     x = LSTM(256, return_sequences=True)(x)
     x = Dropout(0.3)(x)
 
     x = LSTM(128)(x)
     x = Dropout(0.3)(x)
 
-    # -------- Classifier --------
+    #Classifier
     x = Dense(256, activation='relu')(x)
     x = Dropout(0.3)(x)
 
