@@ -77,7 +77,7 @@ def convolve(image, filters, stride=1, padding=0):
     return outputs
 
 
-# 6. Run Different padding and stride Settings
+# Run Different padding and stride Settings
 configs = [
     (0, 1),
     (1, 1),
@@ -92,12 +92,12 @@ for padding, stride in configs:
     results.append((padding, stride, fmaps))
 
 
-# 7. Normalize for display
+#  Normalize 
 def normalize(x):
     return (x - x.min()) / (x.max() - x.min() + 1e-8)
 
 
-# 8. Visualization
+#  Visualization
 rows = len(results)
 cols = len(filters) + 1
 
@@ -111,7 +111,7 @@ for r, (p, s, fmaps) in enumerate(results):
     plt.title(f"Original\nP={p}, S={s}")
     plt.axis('off')
 
-    # Filters output
+    # Filters 
     for c, fm in enumerate(fmaps):
         plt.subplot(rows, cols, r*cols + c + 2)
         plt.imshow(normalize(fm), cmap='gray')
